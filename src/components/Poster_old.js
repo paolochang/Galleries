@@ -5,11 +5,15 @@ const SPoster = styled.img`
   opacity: ${(props) => (props.check ? 0.2 : 1)};
 `;
 
-const Poster = ({ index, image, onListHandler, isChecked }) => {
+const Poster = ({ index, image, posterOnClick, isChecked }) => {
   const [checked] = useState(isChecked);
   const onClickHandler = (e) => {
-    onListHandler(e.target.currentSrc);
+    posterOnClick(e.target.currentSrc);
   };
+
+  useEffect(() => {
+    console.log(`Poster / useEffect / isChecked: ${isChecked}`);
+  }, []);
 
   return (
     <div>
@@ -25,8 +29,8 @@ const Poster = ({ index, image, onListHandler, isChecked }) => {
         TEST{checked}
       </span>
       <SPoster
-        check={image.selected}
-        src={image.poster}
+        check={isChecked}
+        src={image}
         alt={index}
         onClick={(e) => onClickHandler(e)}
       />

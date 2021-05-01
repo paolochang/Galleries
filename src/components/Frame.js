@@ -1,61 +1,94 @@
 import axios from "axios";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import Poster from "./Poster";
+import { FaCheckCircle } from "react-icons/fa";
+import "./Frame.css";
 
 const GridView = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 230px);
 `;
+const PosterContainer = styled.div`
+  height: auto;
+`;
+const Poster = styled.img``;
 
 const Frame = () => {
-  //   const [movies, setMovies] = useState([]);
   const [posters, setPosters] = useState([]);
   const [selects, setSelects] = useState([]);
-  const getMovie = async () => {
-    let result = await axios.get("https://yts.mx/api/v2/list_movies.json");
-    console.log(result);
-    const {
-      data: {
-        data: { movies },
-      },
-    } = result;
-    if (posters.length === 0) {
-      movies.map((movie, index) =>
-        setPosters((old) => [
-          ...old,
-          { poster: movie.medium_cover_image, selected: false },
-        ])
-      );
-    }
-  };
 
   useEffect(() => {
-    getMovie();
-  });
+    console.log(`Frame / useEffect`);
 
-  const onListHandler = (poster) => {
-    let newArray = selects;
-    if (newArray.find((element) => element === poster)) {
-      let index = newArray.indexOf(poster);
-      newArray.splice(index, 1);
+    const getMovie = async () => {
+      let result = await axios.get("https://yts.mx/api/v2/list_movies.json");
+      const {
+        data: {
+          data: { movies },
+        },
+      } = result;
+      let tempMovies = [];
+      movies.map((movie, index) =>
+        tempMovies.push({ poster: movie.medium_cover_image, selected: false })
+      );
+      console.log(`Frame / useEffect / tempMovies`);
+      console.log(tempMovies);
+      setPosters(tempMovies);
+    };
+
+    getMovie();
+  }, [posters]);
+
+  const posterOnClick = (e, index) => {
+    let poster = e.target.currentSrc;
+    let newSelectList = selects;
+    let newPosters = posters;
+
+    if (newSelectList.find((elemant) => elemant === poster)) {
+      let selectIndex = newSelectList.findIndex((e) => e.poster === poster);
+      newSelectList.splice(selectIndex, 1);
+      newPosters.splice(index, 1, { poster, selected: false });
     } else {
-      newArray.push(poster);
+      newSelectList.push(poster);
+      newPosters.splice(index, 1, { poster, selected: true });
     }
-    setSelects(newArray);
+    setSelects(newSelectList);
+    setPosters(newPosters);
   };
 
   return (
     <GridView>
       <span>Frame Component</span>
       {posters.map((movie, index) => (
-        <Poster
-          key={index}
-          image={movie}
-          index={index}
-          isChecked={selects.includes(movie)}
-          onListHandler={onListHandler}
-        />
+        <PosterContainer>
+          <Poster
+            key={index}
+            src={movie.poster}
+            style={
+              selects.includes(movie.poster) ? { opacity: 0.5 } : { opacity: 1 }
+            }
+            onClick={(e) => posterOnClick(e, index)}
+          />
+          <FaCheckCircle
+            style={
+              selects.includes(movie.poster)
+                ? {
+                    position: "relative",
+                    bottom: 35,
+                    left: 90,
+                    fontSize: 22,
+                    color: "lime",
+                  }
+                : {
+                    position: "relative",
+                    bottom: 35,
+                    left: 90,
+                    fontSize: 22,
+                    color: "lightgray",
+                  }
+            }
+          />
+        </PosterContainer>
       ))}
     </GridView>
   );
