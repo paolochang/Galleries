@@ -32,8 +32,9 @@ const Frame = () => {
   };
 
   const togglePoster = () => {
-    let temp = posters.map((movie) => {
+    let temp = posters.map((movie, index) => {
       if (selects.find((item) => item === movie.poster)) {
+        console.log(index, movie.poster);
         return { poster: movie.poster, selected: !movie.selected };
       } else return { poster: movie.poster, selected: movie.selected };
     });
@@ -51,7 +52,7 @@ const Frame = () => {
     let newPosters = posters;
 
     if (newSelectList.find((elemant) => elemant === poster)) {
-      let selectIndex = newSelectList.findIndex((e) => e.poster === poster);
+      let selectIndex = newSelectList.findIndex((e) => e === poster);
       newSelectList.splice(selectIndex, 1);
       newPosters.splice(index, 1, { poster, selected: false });
     } else {
@@ -60,6 +61,7 @@ const Frame = () => {
     }
     setSelects(newSelectList);
     togglePoster();
+    console.log(selects);
   };
 
   const selectHandler = (event) => {
